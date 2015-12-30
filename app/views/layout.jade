@@ -1,0 +1,24 @@
+doctype html
+html(lang='en')
+  head
+    title Blockchan App
+    meta(charset='utf-8')
+    meta(name='viewport',    content='width=device-width, initial-scale=1.0')
+    meta(name='description', content='Blockchain App')
+    meta(name='keywords',    content='')
+    link(rel='stylesheet', href='/stylesheets/main.css')
+    script(src='/javascripts/vendor/underscore.js')
+    script(src='/javascripts/vendor/underscore.strings.js')
+    script(src='/javascripts/app.js')
+    
+    //- block head
+  
+  body(class=bodyClass)
+    .container
+      h1 Blockchain App
+      
+      include ./includes/nav.jade
+          
+      .content
+        block content
+    
