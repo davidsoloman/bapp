@@ -42,13 +42,5 @@ app.use addLocals
 # TODO: get coinbase
 
 
-# export application object
-# module.exports = app
-#
-# or
-#
-# run the app
 
-port = app.port
-app.listen port, ->
-  console.log "Listening on #{port}\nPress CTRL-C to stop server."
+module.exports = app

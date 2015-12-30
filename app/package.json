@@ -3,5 +3,8 @@
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
     "jade": "^1.11.0"
+  },
+  "scripts": {
+	   "app": "(coffee --compile --watch . &); ./bin/ui"
   }
 }
