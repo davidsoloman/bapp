@@ -5,6 +5,7 @@
     "jade": "^1.11.0"
   },
   "scripts": {
-	   "app": "(coffee --compile --watch . &); ./bin/ui"
+     "app": "(coffee --compile --output dist --watch . &); node dist/bin/ui.js",
+	   "app_raw": "./bin/ui"
   }
 }

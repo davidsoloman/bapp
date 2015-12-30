@@ -16,26 +16,43 @@ app.set 'view engine', 'jade'
 # parse req.body
 app.use bodyParser()
 
-# initialize routes
-#
-# routes = require './routes'
-# routes app
+
+# custom middlewares
 
 # TODO: locals (bodyClass)
-
-app.get '/', (req, res) ->
-  res.send('Hello World!');
-
-  console.warn "error 404: ", req.url
-  res.statusCode = 404
-  res.render '404', 404
 
 addLocals = (req, res, next) ->
   res.locals.requestPath = req.path
   res.locals.bodyClass   = req.path.split("/")[1] || "home"
   next()
 
+
+
+# routes
+
+
+app.get '/', (req, res) ->
+  res.render 'index.jade'
+  # res.send 'Hello World!'
+
+routesApi = []
+
+api = express.Router()
+api.get '/', (req, res) ->
+  message = "API endpoints available: '#{routesApi.join ', '}'"
+  res.json
+    message: message
+
+
+
 app.use addLocals
+app.use '/api', api
+
+
+# initialize other routes
+#
+# routes = require './routes'
+# routes app
 
 
 # TODO: read contracts
