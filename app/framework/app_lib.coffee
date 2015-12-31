@@ -4,7 +4,7 @@ bodyParser = require('body-parser').json
 # apply customizations to the express app
 mount = (app) ->
   # set public dir assets # TODO: don't mount in prod option to use nginx
-  app.use express.static(process.cwd() + '/public')
+  app.use express.static "#{process.cwd()}/public"
 
   # use jade
   app.set 'view engine', 'jade'

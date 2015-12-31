@@ -3,14 +3,15 @@ bodyParser = require('body-parser').json
 
 app = express()
 
-app.port = process.env.PORT || 3000
+app.port = process.env.PORT || 3001
 env = process.env.NODE_ENV  || "development"
 
 # set public dir assets # TODO: don't mount in prod option to use nginx
-app.use express.static(process.cwd() + '/public')
+app.use express.static "#{process.cwd()}/framework/playground/public"
 
 # use jade
 app.set 'view engine', 'jade'
+app.set 'views',       "#{process.cwd()}/framework/playground/views"
 
 # parse req.body
 app.use bodyParser()
@@ -38,4 +39,8 @@ app.use '/api', api
 
 
 
-module.exports = app
+# module.exports = app
+
+port = app.port
+app.listen port, ->
+  console.log "Listening on #{port}\nPress CTRL-C to stop server."
