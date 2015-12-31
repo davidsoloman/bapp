@@ -1,16 +1,21 @@
 express    = require 'express'
-appLib     = require './app_lib'
+bodyParser = require('body-parser').json
 
 app = express()
 
 app.port = process.env.PORT || 3000
 env = process.env.NODE_ENV  || "development"
 
-app = appLib.mount app
+# set public dir assets # TODO: don't mount in prod option to use nginx
+app.use express.static(process.cwd() + '/public')
 
+# use jade
+app.set 'view engine', 'jade'
+
+# parse req.body
+app.use bodyParser()
 
 # routes
-
 app.get '/', (req, res) ->
   res.render 'index.jade'
   # res.send 'Hello World!'
@@ -23,17 +28,10 @@ api.get '/', (req, res) ->
   res.json
     message: message
 
-
-
-app.use appLib.addLocals
 app.use '/api', api
 
 
-# initialize other routes
-#
-# routes = require './routes'
-# routes app
-
+# TODO: load app from outside the framework
 
 # TODO: read contracts
 # TODO: get coinbase

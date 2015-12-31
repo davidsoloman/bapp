@@ -4,6 +4,6 @@
 
 Ethereum based blockchain web application development framework by Applied Blockchain.
 
-stage: Alpha
+current stage: Alpha
 
 check back in few weeks :)

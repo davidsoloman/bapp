@@ -6,8 +6,6 @@
   },
   "scripts": {
      "app": "(coffee --compile --output dist --watch . &); node dist/bin/ui.js",
-	   "app_raw": "./bin/ui",
-     "playground": "(coffee --compile --output dist --watch . &); node dist/framework/playground/playground.js"
-
+	   "app_raw": "./bin/ui"
   }
 }
