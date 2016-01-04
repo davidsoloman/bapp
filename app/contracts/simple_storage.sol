@@ -1,11 +1,11 @@
 contract SimpleStorage {
-  string32 data;
+  bytes32 data;
 
-  function set(string32 value) {
+  function set(bytes32 value) {
     data = value;
   }
 
-  function get() constant returns (string32 value){
+  function get() constant returns (bytes32 value){
     return data;
   }
 }

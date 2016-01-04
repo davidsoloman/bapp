@@ -2,8 +2,10 @@ fs   = require 'fs'
 glob = require "glob"
 path = require 'path'
 _    = require 'underscore'
+c = console
 
 Web3 = require 'web3'
+
 # requires geth
 #
 # configs
@@ -13,8 +15,8 @@ provider = new Web3.providers.HttpProvider geth_host
 web3     = new Web3 provider
 eth      = web3.eth
 if !web3.isConnected()
-  console.log "Ethereum (geth) is not connected - host: '#{geth_host}'"
-  console.log "exiting..."
+  c.log "Ethereum (geth) is not connected - host: '#{geth_host}'"
+  c.log "exiting..."
   process.exit 1
 #
 
@@ -23,17 +25,45 @@ contract =
   source:   null
   abi:      null
   methods:  []
+  getters:  []
+  setters:  []
 
 contracts = []
 
 
 parseContract = (contract) ->
   compiled = web3.eth.compile.solidity contract.source
-  console.log compiled
+  abi = compiled.SimpleStorage.info.abiDefinition
+  abi = _(abi)
+  methods = []
+  getters = []
+  setters = []
 
-  # contract.merge
+  abi_methods = abi.select (token) ->
+    token.type == "function"
+  abi_methods.map (abi_method) ->
+    type = if abi_method.constant then "getter" else "setter"
+    method =
+      name:    abi_method.name
+      kind:    type
+      inputs:  abi_method.inputs
+      outputs: abi_method.outputs
+    methods.push method
+    if method.kind == "getter"
+      getters.push method
+    else
+      setters.push method
 
-  contract
+  # contract
+  {
+    name:     contract.name
+    path:     contract.path
+    source:   contract.source
+    abi:      abi.value()
+    methods:  methods
+    getters:  getters
+    setters:  setters
+  }
 
 
 readContracts = ->
@@ -45,7 +75,7 @@ readContracts = ->
     contract =
       name:   name
       path:   contract_path
-      source: source
+      source: source.toString()
 
     contracts.push parseContract contract
 
@@ -54,5 +84,5 @@ readContracts = ->
 
 # module.exports = contracts
 
-c = readContracts()
-console.log c
+cont = readContracts()
+c.log cont
