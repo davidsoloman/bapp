@@ -47,6 +47,7 @@ parseContract = (contract) ->
 
   _(contract).extend
     abi:      abi.value()
+    compiled: compiled
     methods:  methods
     getters:  getters
     setters:  setters

@@ -58,3 +58,8 @@ bapp ui     - launches the BApp ui
 bapp chain  - launches the blockchain via geth
 bapp run    - runs all the UIs and Blockchain instances you set up
 bapp deploy - deploys the app via SSH or on docker hub
+
+
+#### Notes
+
+using registrars and admin functions example: https://github.com/ethereum/go-ethereum/wiki/Contracts-and-Transactions#example-script

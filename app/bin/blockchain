@@ -37,7 +37,7 @@ geth  \
   --password="$DIRNAME/config/password"           \
   --genesis="$DIRNAME/config/genesis-block.json"  \
   --port $port --networkid "13161622" --nodiscover --nat "none" \
-   --maxpeers 3 --rpc --rpcport $rpcport --mine   \
+  --maxpeers 3 --rpc --rpcport $rpcport --mine    \
   --minerthreads=1 --verbosity "5"                \
   --rpccorsdomain="*" --etherbase=$coinbase       \
   --unlock=$coinbase                              \

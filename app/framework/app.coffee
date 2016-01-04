@@ -109,31 +109,48 @@ app.post "/deploy_contract", (req, res) ->
   c.log "Deploying contract: #{contract.name}"
 
   Contract = eth.contract contract.abi
-  options =
-      data: contract.code, # TODO: class_name ?? contract["SimpleStorage"].code ????
-      from: eth.coinbase,
-      gas: 10000
-      # gas:   20000000000, # prev: 2000000
-      # gasPrice: 50000000000000,
 
-  Contract.new options, (err, contract) ->
+  options =
+    data: contract.compiled["SimpleStorage"].code, # TODO: class_name ?? contract["SimpleStorage"].code ????
+    from: eth.coinbase,
+    # gas:      1e6 # 1_000_000
+
+  Contract.new options, (err, contract_instance) ->
+    instance = contract_instance
+    c.log "ADDRESS: #{instance.address}" if instance
+
     if err
       displayErr "deploying contract", err
+      if err.message == "Account does not exist or account balance too low"
+        c.log "Balance: #{eth.getBalance(eth.coinbase)} wei - coinbase address: '#{eth.coinbase}'"
+
       message = "The deployment of the contract failed, this is the full error message: '#{err.message}'"
       res.json
         error:       "contract_deployment_failed"
         message:     message
         eth_message: err.message
+
     else
-      if contract.address
+      if instance.address
         # console.log "contract: #{stringify contract}"
-        console.log "  address: #{contract.address}\n"
+        console.log "  address: #{instance.address}\n"
         console.log "done!"
+
+        # TODO: save contract
+        config_path = "./config"
+        contracts_json_path   = "#{config_path}/contracts.json"
+        contracts_config      = fs.readFileSync contracts_json_path
+        config                = JSON.parse contracts_config
+        config[contract.name] = instance.address
+        config_json           = JSON.stringify(config, null, 2)
+        fs.writeFileSync contracts_json_path, config_json
 
         res.json
           success: true
           address: contract.address
 
+
+# TODO: add address alloc.balance (to a very big number) to never run out of gas
 
 
 module.exports = app
