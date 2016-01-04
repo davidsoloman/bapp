@@ -16,10 +16,18 @@ app.set 'views',       "#{process.cwd()}/framework/playground/views"
 # parse req.body
 app.use bodyParser()
 
+# --------------------------------
+# main page
+
+contracts = readContracts()
+
 # routes
 app.get '/', (req, res) ->
-  res.render 'index.jade'
+  res.render 'index.jade',
+    contracts: contracts
   # res.send 'Hello World!'
+
+# --------------------------------
 
 routesApi = []
 

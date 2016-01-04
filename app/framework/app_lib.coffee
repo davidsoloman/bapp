@@ -1,5 +1,6 @@
 express    = require 'express'
 bodyParser = require('body-parser').json
+_s         = require "underscore.string"
 
 # apply customizations to the express app
 mount = (app) ->
@@ -11,6 +12,8 @@ mount = (app) ->
 
   # parse req.body
   app.use bodyParser()
+
+  app.locals._s = _s
 
   app
 

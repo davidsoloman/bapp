@@ -8,8 +8,11 @@ execSync("ls").toString()
 # copy contract simple_storage.sol
 `cp #{template}/#{template}.sol`
 
-# generate model
 
+# if option --bare is passed, remove simple_storage contract
+
+
+# generate model
 
 # generate nav entries and copy
 `cp `

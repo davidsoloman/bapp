@@ -1,5 +1,5 @@
 class SimpleStorage
-  constructor: ()
+  constructor: ->
 
   get: ->
 
@@ -7,3 +7,5 @@ class SimpleStorage
 
 
 simpleStorage = new SimpleStorage
+
+# TODO: include caching
