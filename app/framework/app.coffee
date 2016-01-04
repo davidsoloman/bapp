@@ -1,9 +1,10 @@
-express    = require 'express'
-appLib     = require './app_lib'
+fs      = require 'fs'
+express = require 'express'
+appLib  = require './app_lib'
 
 app = express()
 
-app.port = process.env.PORT || 3000
+app.port = process.env.PORT || 3001
 env = process.env.NODE_ENV  || "development"
 
 app = appLib.mount app
@@ -28,6 +29,11 @@ api.get '/', (req, res) ->
 app.use appLib.addLocals
 app.use '/api', api
 
+
+path =
+fs.readdirSync
+
+fs.readFileSync
 
 # initialize other routes
 #

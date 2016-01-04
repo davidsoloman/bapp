@@ -1,5 +1,5 @@
 {
-  "rpcport":  8546,
+  "rpcport":  8548,
   "nodeport": 3000,
   "host":     "127.0.0.1",
 }

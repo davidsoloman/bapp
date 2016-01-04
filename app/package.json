@@ -2,13 +2,19 @@
   "dependencies": {
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
+    "glob": "^6.0.3",
     "jade": "^1.11.0",
-    "underscore.string": "^3.2.2"
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.2.2",
+    "web3": "^0.15.1"
   },
   "scripts": {
     "app": "(coffee --compile --output dist --watch . &); node dist/bin/ui.js",
     "app_raw": "./bin/ui",
     "playground": "(coffee --compile --output dist --watch . &); node dist/framework/playground/playground.js",
     "tmp": "(coffee --compile --output dist --watch . &); node dist/framework/playground/lib/contracts.js"
+  },
+  "devDependencies": {
+    "underscore-cli": "^0.2.18"
   }
 }

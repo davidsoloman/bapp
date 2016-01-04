@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+DIRNAME=`dirname "$dir"`
+DIRNAME="$(cd $DIRNAME && pwd)"
+underscore="$DIRNAME/node_modules/underscore-cli/bin/underscore"
+
+
+# TODO: move in lib
+function get_config_var() {
+  var_name=$1
+  echo $(cat $DIRNAME/config/bapp.json | $underscore select .$var_name --outfmt text )
+}
+
+# configs:
+coinbase_1="0x563adf8ff6867ad943c956280f523565239ac830"
+
+
+# TODO: move in config/bapp.json
+ui_name_base="3"
+coinbase=$coinbase_1
+port=$(get_config_var "nodeport")
+rpcport=$(get_config_var "rpcport")
+
+echo "port: $port, rpcport: $rpcport"
+
+if [ "$1" == "account" ]; then
+  echo "creating a new account and exiting..."
+  geth  \
+    --datadir "$HOME/eth-db/db-$ui_name_base"       \
+    --password="$DIRNAME/config/password"           \
+    --genesis="$DIRNAME/config/genesis-block.json"  \
+    account new
+  exit
+fi
+
+geth  \
+  --datadir "$HOME/eth-db/db-$ui_name_base"       \
+  --password="$DIRNAME/config/password"           \
+  --genesis="$DIRNAME/config/genesis-block.json"  \
+  --port $port --networkid "13161622" --nodiscover --nat "none" \
+   --maxpeers 3 --rpc --rpcport $rpcport --mine   \
+  --minerthreads=1 --verbosity "5"                \
+  --rpccorsdomain="*" --etherbase=$coinbase       \
+  --unlock=$coinbase                              \
+  js ./dist/framework/playground/lib/vendor/geth_mine.js
