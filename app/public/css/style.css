@@ -1,3 +1,12 @@
+/* reset */
+
+ul {
+  list-style-type: none;
+}
+
+
+/* main */
+
 body {
   background: #FAFAFA;
 }

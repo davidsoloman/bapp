@@ -9,9 +9,25 @@ block content
       input(value="Deploy", type="submit")
     
   else
-    p The contract is present at address: ADDR
+    p The contract is present at address: #{contract.address}
     
     p These are all the methods available:
     
+    p Getters:
+    
+    ul
+      each method in contract.getters
+        li
+          h4
+            a(href="/api/#{contract.name}/#{method.name}")= method.name
+    
+    p Setters:
+    
+    ul
+      each method in contract.setters
+        li
+          h4= method.name 
+          form(action="/api/#{contract.name}/#{method.name}", method="post")
+            input(value="call" type="submit")
     
     p Your coinbase is: #{eth.coinbase}
