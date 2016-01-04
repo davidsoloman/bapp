@@ -1,5 +1,5 @@
 express    = require 'express'
-bodyParser = require('body-parser').json
+bodyParser = require('body-parser')
 _s         = require "underscore.string"
 
 # apply customizations to the express app
@@ -11,7 +11,8 @@ mount = (app) ->
   app.set 'view engine', 'jade'
 
   # parse req.body
-  app.use bodyParser()
+  app.use bodyParser.json()
+  app.use bodyParser.urlencoded( extended: true )
 
   app.locals._s = _s
 

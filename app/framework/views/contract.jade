@@ -1,13 +1,17 @@
 extends ../../views/layout
     
 block content 
-  p The contract has not been deployed yet
-  
-  input(value="Deploy", type="submit")
-  
-  p The contract is present at address: ADDR
-  
-  p These are all the methods available:
-  
-  
-  p Your coinbase is: #{eth.coinbase}
+  if !contract.deployed
+    p The contract has not been deployed yet
+    
+    form(action="/deploy_contract" method="post")
+      input(name="contract[name]", value=contract.name, type="hidden")
+      input(value="Deploy", type="submit")
+    
+  else
+    p The contract is present at address: ADDR
+    
+    p These are all the methods available:
+    
+    
+    p Your coinbase is: #{eth.coinbase}

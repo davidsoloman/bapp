@@ -2,11 +2,17 @@ fs   = require 'fs'
 glob = require "glob"
 path = require 'path'
 _    = require 'underscore'
+c    = console
 env  = require "./env"
 eth  = env.eth
 
 contracts_dir_path = "./contracts"
+config_path        = "./config"
 
+log = (name, contents) ->
+  c.log "\n#{name}:"
+  c.log contents
+  c.log ''
 
 # contract =
 #   name:     null
@@ -39,28 +45,33 @@ parseContract = (contract) ->
     else
       setters.push method
 
-  # contract
-  {
-    name:     contract.name
-    path:     contract.path
-    source:   contract.source
+  _(contract).extend
     abi:      abi.value()
     methods:  methods
     getters:  getters
     setters:  setters
-  }
 
 
 readContracts = ->
   contracts = []
-  contract_files = glob.sync "#{contracts_dir_path}/*.sol"
+  contract_files   = glob.sync "#{contracts_dir_path}/*.sol"
+  contracts_config = fs.readFileSync "#{config_path}/contracts.json"
+  config = JSON.parse contracts_config
+
+  log "contracts.json", config
+
   contract_files = _(contract_files).map (contract_path) ->
-    name   = path.basename contract_path, ".sol"
-    source = fs.readFileSync contract_path
+    name     = path.basename contract_path, ".sol"
+    source   = fs.readFileSync contract_path
+    address  = config[name]
+    deployed = address?
+
     contract =
-      name:   name
-      path:   contract_path
-      source: source.toString()
+      name:     name
+      path:     contract_path
+      source:   source.toString()
+      deployed: deployed
+      address:  address
 
     contracts.push parseContract contract
 
