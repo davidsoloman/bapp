@@ -142,12 +142,21 @@ app.post "/deploy_contract", (req, res) ->
         contracts_config      = fs.readFileSync contracts_json_path
         config                = JSON.parse contracts_config
         config[contract.name] = instance.address
+        contract.address      = instance.address
+        deployed              = true
         config_json           = JSON.stringify(config, null, 2)
         fs.writeFileSync contracts_json_path, config_json
+
+        # TODO: fixme - refresh the contract in contracts in memory
+        #
+        # contracts = _(contracts).reject (contr) ->
+        #     contr.name == contract.name
+        # contracts.push contract
 
         res.json
           success: true
           address: contract.address
+
 
 
 # TODO: add address alloc.balance (to a very big number) to never run out of gas
