@@ -1,4 +1,13 @@
 extends ../../views/layout
     
 block content 
-  p test
+  p The contract has not been deployed yet
+  
+  input(value="Deploy", type="submit")
+  
+  p The contract is present at address: ADDR
+  
+  p These are all the methods available:
+  
+  
+  p Your coinbase is: #{eth.coinbase}

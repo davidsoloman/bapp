@@ -1,12 +1,13 @@
 fs        = require 'fs'
 express   = require 'express'
 appLib    = require './app_lib'
+env       = require './lib/env'
 contracts = require './lib/contracts'
 
 app = express()
 
 app.port = process.env.PORT || 3001
-env = process.env.NODE_ENV  || "development"
+app_env  = process.env.NODE_ENV  || "development"
 
 app = appLib.mount app
 
@@ -35,7 +36,7 @@ console.log "contracts: #{JSON.stringify contracts}"
 
 contracts.forEach (contract) ->
   app.get "/#{contract.name}", (req, res) ->
-    res.render '../framework/views/contract.jade'
+    res.render '../framework/views/contract.jade', eth: env.eth
 
 # initialize other routes
 #
