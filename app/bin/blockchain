@@ -41,4 +41,4 @@ geth  \
   --minerthreads=1 --verbosity "5"                \
   --rpccorsdomain="*" --etherbase=$coinbase       \
   --unlock=$coinbase                              \
-  js ./dist/framework/playground/lib/vendor/geth_mine.js
+  js ./dist/framework/lib/geth_mine.js

@@ -86,3 +86,5 @@ readContracts = ->
 
 cont = readContracts()
 c.log cont
+
+module.exports = cont

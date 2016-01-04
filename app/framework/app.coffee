@@ -1,6 +1,7 @@
-fs      = require 'fs'
-express = require 'express'
-appLib  = require './app_lib'
+fs        = require 'fs'
+express   = require 'express'
+appLib    = require './app_lib'
+contracts = require './lib/contracts'
 
 app = express()
 
@@ -30,10 +31,7 @@ app.use appLib.addLocals
 app.use '/api', api
 
 
-path =
-fs.readdirSync
-
-fs.readFileSync
+console.log "contracts: #{contracts}"
 
 # initialize other routes
 #
