@@ -30,8 +30,12 @@ api.get '/', (req, res) ->
 app.use appLib.addLocals
 app.use '/api', api
 
+contracts = contracts.readContracts()
+console.log "contracts: #{JSON.stringify contracts}"
 
-console.log "contracts: #{contracts}"
+contracts.forEach (contract) ->
+  app.get "/#{contract.name}", (req, res) ->
+    res.render '../framework/views/contract.jade'
 
 # initialize other routes
 #

@@ -3,8 +3,10 @@ glob = require "glob"
 path = require 'path'
 _    = require 'underscore'
 c = console
-
 Web3 = require 'web3'
+
+contracts_dir_path = "./contracts"
+
 
 # requires geth
 #
@@ -67,10 +69,9 @@ parseContract = (contract) ->
 
 
 readContracts = ->
-  # fs.readdirSync "../../../contracts/"
-  contract_files = glob.sync "../../../contracts/*.sol"
+  contract_files = glob.sync "#{contracts_dir_path}/*.sol"
   contract_files = _(contract_files).map (contract_path) ->
-    name   = path.basename contract_path
+    name   = path.basename contract_path, ".sol"
     source = fs.readFileSync contract_path
     contract =
       name:   name
@@ -81,10 +82,5 @@ readContracts = ->
 
   contracts
 
-
-# module.exports = contracts
-
-cont = readContracts()
-c.log cont
-
-module.exports = cont
+module.exports =
+  readContracts: readContracts
