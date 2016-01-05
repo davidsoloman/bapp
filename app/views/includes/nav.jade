@@ -1,6 +1,6 @@
 nav
   a(href='/') Home
-  - routes = ["simple_storage"]
+  - routes = ["simple_storage", "contact_form"]
   each route in routes
     - label = _s(route).humanize().value()
     a(href=route)= label

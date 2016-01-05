@@ -1,10 +1,13 @@
-fs   = require 'fs'
-glob = require "glob"
-path = require 'path'
-_    = require 'underscore'
-c    = console
-env  = require "./env"
-eth  = env.eth
+fs         = require 'fs'
+glob       = require "glob"
+path       = require 'path'
+_          = require 'underscore'
+_string    = require 'underscore.string'
+camelize   = _string.camelize
+capitalize = _string.capitalize
+c          = console
+env        = require "./env"
+eth        = env.eth
 
 contracts_dir_path = "./contracts"
 config_path        = "./config"
@@ -23,8 +26,9 @@ log = (name, contents) ->
 #   setters:  []
 
 parseContract = (contract) ->
+  contract_class = capitalize camelize(contract.name, true)
   compiled = eth.compile.solidity contract.source
-  abi = compiled.SimpleStorage.info.abiDefinition
+  abi = compiled[contract_class].info.abiDefinition
   abi = _(abi)
   methods = []
   getters = []
@@ -46,11 +50,12 @@ parseContract = (contract) ->
       setters.push method
 
   _(contract).extend
-    abi:      abi.value()
-    compiled: compiled
-    methods:  methods
-    getters:  getters
-    setters:  setters
+    class_name: contract_class
+    abi:        abi.value()
+    compiled:   compiled
+    methods:    methods
+    getters:    getters
+    setters:    setters
 
 
 readContracts = ->

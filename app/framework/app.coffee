@@ -96,22 +96,37 @@ app.use '/api', api
 
 # admin code - deploy contract / restart / etc
 
+saveContractAddress = (contract_name, instance_address) ->
+  config_path = "./config"
+  contracts_json_path   = "#{config_path}/contracts.json"
+  contracts_config      = fs.readFileSync contracts_json_path
+  config                = JSON.parse contracts_config
+  config[contract_name] = instance_address
+  config_json           = JSON.stringify config, null, 2
+  fs.writeFileSync contracts_json_path, config_json
+
 displayErr = (label, err) ->
   console.error "Got error when '#{label}':"
   console.error "#{err}\n"
 
-app.post "/deploy_contract", (req, res) ->
-  c.log "PARAMS"
-  c.log req.body
-  contract = _(contracts).find (contract) ->
-    contract.name == req.body.contract.name
+renderDeployError = (err) ->
+  displayErr "deploying contract", err
+  if err.message == "Account does not exist or account balance too low"
+    c.log "Balance: #{eth.getBalance(eth.coinbase)} wei - coinbase address: '#{eth.coinbase}'"
 
+  message = "The deployment of the contract failed, this is the full error message: '#{err.message}'"
+  res.json
+    error:       "contract_deployment_failed"
+    message:     message
+    eth_message: err.message
+
+deployContract = (contract, res) ->
   c.log "Deploying contract: #{contract.name}"
 
   Contract = eth.contract contract.abi
 
   options =
-    data: contract.compiled["SimpleStorage"].code, # TODO: class_name ?? contract["SimpleStorage"].code ????
+    data: contract.compiled[contract.class_name].code,
     from: eth.coinbase,
     # gas:      1e6 # 1_000_000
 
@@ -120,32 +135,16 @@ app.post "/deploy_contract", (req, res) ->
     c.log "ADDRESS: #{instance.address}" if instance
 
     if err
-      displayErr "deploying contract", err
-      if err.message == "Account does not exist or account balance too low"
-        c.log "Balance: #{eth.getBalance(eth.coinbase)} wei - coinbase address: '#{eth.coinbase}'"
-
-      message = "The deployment of the contract failed, this is the full error message: '#{err.message}'"
-      res.json
-        error:       "contract_deployment_failed"
-        message:     message
-        eth_message: err.message
-
+      renderDeployError err
     else
       if instance.address
-        # console.log "contract: #{stringify contract}"
         console.log "  address: #{instance.address}\n"
         console.log "done!"
 
-        # TODO: save contract
-        config_path = "./config"
-        contracts_json_path   = "#{config_path}/contracts.json"
-        contracts_config      = fs.readFileSync contracts_json_path
-        config                = JSON.parse contracts_config
-        config[contract.name] = instance.address
         contract.address      = instance.address
-        deployed              = true
-        config_json           = JSON.stringify(config, null, 2)
-        fs.writeFileSync contracts_json_path, config_json
+        contract.deployed     = true
+
+        saveContractAddress contract.name, instance.address
 
         # TODO: fixme - refresh the contract in contracts in memory
         #
@@ -156,6 +155,15 @@ app.post "/deploy_contract", (req, res) ->
         res.json
           success: true
           address: contract.address
+
+app.post "/deploy_contract", (req, res) ->
+  contract_name = req.body.contract.name
+
+  contract = _(contracts).find (contract) ->
+    contract.name == contract_name
+
+  deployContract contract, res
+
 
 
 
