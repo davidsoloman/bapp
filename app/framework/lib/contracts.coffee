@@ -3,7 +3,7 @@ glob       = require "glob"
 path       = require 'path'
 _          = require 'underscore'
 _string    = require 'underscore.string'
-camelize   = _string.camelize
+classify   = _string.classify
 capitalize = _string.capitalize
 c          = console
 env        = require "./env"
@@ -26,7 +26,7 @@ log = (name, contents) ->
 #   setters:  []
 
 parseContract = (contract) ->
-  contract_class = capitalize camelize(contract.name, true)
+  contract_class = capitalize classify(contract.name, true)
   compiled = eth.compile.solidity contract.source
   abi = compiled[contract_class].info.abiDefinition
   abi = _(abi)

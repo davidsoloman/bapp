@@ -25,7 +25,11 @@ addLocals = (req, res, next) ->
   res.locals.bodyClass   = req.path.split("/")[1] || "home"
   next()
 
+addLocal = (app, key, value) ->
+  app.locals[key] = value
+  app
 
 module.exports =
-  mount:      mount,
-  addLocals:  addLocals,
+  mount:      mount
+  addLocals:  addLocals
+  addLocal:   addLocal

@@ -91,6 +91,7 @@ contracts.forEach (contract) ->
 
 
 app.use appLib.addLocals
+app = appLib.addLocal app, "contracts", contracts
 app.use '/api', api
 
 
@@ -155,6 +156,7 @@ deployContract = (contract, res) ->
         res.json
           success: true
           address: contract.address
+
 
 app.post "/deploy_contract", (req, res) ->
   contract_name = req.body.contract.name

@@ -1,3 +1,4 @@
 node_modules
 dist
 .node-*
+framework/deploy/deploy_config.json
