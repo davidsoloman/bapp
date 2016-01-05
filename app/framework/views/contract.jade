@@ -37,6 +37,7 @@ block content
               each input in method.inputs
                 - label = `${input.name} (${input.type})`
                 input(name="values[]" placeholder=label type="text")
+                input(name="types[]" value=input.type type="hidden")
                 
               input(value="call" type="submit")
       

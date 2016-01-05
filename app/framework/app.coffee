@@ -44,21 +44,35 @@ returnError = (res, type) ->
     error:   errorType
     message: errorMessages[errorType]
 
+convertValue = (value, type, method) ->
+  switch type
+    when "uint256"
+      Number value
+    when "bytes32"
+      if method == "getter"
+        tAsc value
+      else
+        fAsc value
+    else
+      c.error "ERROR:"
+      c.error "TYPE: '#{type}' not handled properly by setter handler"
+
 defineGetter = (api, contract, method) ->
   url = "/#{contract.name}/#{method.name}"
   # c.log "defining route: GET  #{url}"
   api.get url, (req, res) ->
-    # TODO call getter
-
+    # TODO; do this in contracts.coffee!
     Contract = eth.contract contract.abi
     instance = Contract.at contract.address
     value = instance[method.name]()
+    type  = method.outputs[0].type
+
     c.log "#{contract.name}.#{method.name}()"
     c.log "  //=> raw: #{value}"
-    c.log "  //=> num: #{Number value}"
-    c.log "  //=> str: #{tAsc value}\n"
 
-    value = Number(value)
+    value = convertValue value, type, "getter"
+
+    c.log "  //=> '#{value}' (type: #{type})"
 
     res.json
       value: value
@@ -70,21 +84,29 @@ defineSetter = (api, contract, method) ->
   # c.log "defining route: POST #{url}"
 
   api.post url, (req, res) ->
-    # TODO call setter
-
+    # TODO; do this in contracts.coffee!
     Contract = eth.contract contract.abi
     instance = Contract.at contract.address
 
     values = req.body.values
+    types  = req.body.types
 
     c.log "#{contract.name}.#{method.name}(#{values.join(", ")})"
+
+    values = _(values).map (value, idx) ->
+      {
+        type:  types[idx]
+        value: value
+      }
+
     values = _(values).map (value) ->
-      fAsc value
+      convertValue value.value, value.type, "setter"
+
     c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (formatted)"
 
     values.push from: eth.coinbase
 
-    output = instance.set.sendTransaction.apply(null, values)
+    output = instance[method.name].sendTransaction.apply(null, values)
     c.log "  //=> raw: #{output}"
 
     res.json
