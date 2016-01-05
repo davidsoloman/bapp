@@ -1,5 +1,6 @@
 {
-  "rpcport":  8548,
-  "nodeport": 3000,
-  "host":     "127.0.0.1",
+  "rpcport":    8548,
+  "nodeport":   3000,
+  "host":       "127.0.0.1",
+  "db_dirname": "3"
 }

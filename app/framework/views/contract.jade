@@ -5,7 +5,13 @@ block content
   - var isPresent = function(contract) {
   -   return true // TODO: check if contract is present and deployed 
   - }
-
+    
+  h4
+    span
+      | Contract: 
+    = _s(contract.class_name).humanize().capitalize(false).value()
+    
+    
   if !contract.deployed
     p The contract has not been deployed yet
     
@@ -15,24 +21,26 @@ block content
     
   else
     if isPresent(contract)
-      p The contract is present at address: #{contract.address}
+      p 
+        | Contract present at address: 
+        strong= contract.address
       
-      p These are all the methods available:
-      
-      p Getters:
-      
+      h5 Getters:
       ul
         each method in contract.getters
           li
             h4
-              a(href="/api/#{contract.name}/#{method.name}")= method.name
+              a(href="/api/#{contract.name}/#{method.name}")
+                | #{method.name}( )
       
-      p Setters:
+      hr
       
+      h5 Setters:
       ul
         each method in contract.setters
           li
-            h4= method.name 
+            h4
+              | #{method.name}(#{method.inputs.length})
             form(action="/api/#{contract.name}/#{method.name}", method="post")
               each input in method.inputs
                 - label = `${input.name} (${input.type})`
@@ -41,4 +49,7 @@ block content
                 
               input(value="call" type="submit")
       
-      p Your coinbase is: #{eth.coinbase}
+      p 
+        | Your coinbase is: 
+        strong= eth.coinbase
+      

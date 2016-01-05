@@ -23,15 +23,10 @@ app = appLib.mount app
 
 app.get '/', (req, res) ->
   res.render 'index.jade'
-  # res.send 'Hello World!'
 
-routesApi = []
+
 
 api = express.Router()
-api.get '/', (req, res) ->
-  message = "API endpoints available: '#{routesApi.join ', '}'"
-  res.json
-    message: message
 
 # API
 #
@@ -72,7 +67,7 @@ defineGetter = (api, contract, method) ->
 
     value = convertValue value, type, "getter"
 
-    c.log "  //=> '#{value}' (type: #{type})"
+    c.log "  //=> '#{value}' (type: #{type})\n"
 
     res.json
       value: value
@@ -107,7 +102,7 @@ defineSetter = (api, contract, method) ->
     values.push from: eth.coinbase
 
     output = instance[method.name].sendTransaction.apply(null, values)
-    c.log "  //=> raw: #{output}"
+    c.log "  //=> raw: #{output}\n"
 
     res.json
       success: true
@@ -137,6 +132,15 @@ contracts.forEach (contract) ->
 
   contract.setters.forEach (method) ->
     defineSetter api, contract, method
+
+  # TODO: explanatory route
+  #
+  # api.get '/', (req, res) ->
+  #   message = "List of API endpoints available"
+  #   res.json
+  #     message: message
+  #     getters: []
+  #     setters: []
 
 
 # TODO: option to generate routes in static files (and load them) instead of defining them programmatically

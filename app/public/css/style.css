@@ -19,9 +19,13 @@ body {
 }
 
 nav {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 nav > a {
   margin-right: 10px;
+}
+
+h4 > span {
+  font-size: 0.7em;
 }
