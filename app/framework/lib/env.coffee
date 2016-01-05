@@ -16,4 +16,5 @@ if !web3.isConnected()
 #
 
 module.exports =
-  eth: eth
+  web3: web3
+  eth:  eth

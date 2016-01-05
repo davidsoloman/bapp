@@ -34,6 +34,10 @@ block content
           li
             h4= method.name 
             form(action="/api/#{contract.name}/#{method.name}", method="post")
+              each input in method.inputs
+                - label = `${input.name} (${input.type})`
+                input(name="values[]" placeholder=label type="text")
+                
               input(value="call" type="submit")
       
       p Your coinbase is: #{eth.coinbase}

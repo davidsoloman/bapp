@@ -5,6 +5,9 @@ appLib    = require './app_lib'
 env       = require './lib/env'
 contracts = require './lib/contracts'
 eth       = env.eth
+web3      = env.web3
+fAsc      = web3.fromAscii
+tAsc      = web3.toAscii
 
 c = console
 
@@ -46,7 +49,17 @@ defineGetter = (api, contract, method) ->
   # c.log "defining route: GET  #{url}"
   api.get url, (req, res) ->
     # TODO call getter
-    value = 0
+
+    Contract = eth.contract contract.abi
+    instance = Contract.at contract.address
+    value = instance[method.name]()
+    c.log "#{contract.name}.#{method.name}()"
+    c.log "  //=> raw: #{value}"
+    c.log "  //=> num: #{Number value}"
+    c.log "  //=> str: #{tAsc value}\n"
+
+    value = Number(value)
+
     res.json
       value: value
     # or
@@ -55,8 +68,25 @@ defineGetter = (api, contract, method) ->
 defineSetter = (api, contract, method) ->
   url = "/#{contract.name}/#{method.name}"
   # c.log "defining route: POST #{url}"
+
   api.post url, (req, res) ->
     # TODO call setter
+
+    Contract = eth.contract contract.abi
+    instance = Contract.at contract.address
+
+    values = req.body.values
+
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")})"
+    values = _(values).map (value) ->
+      fAsc value
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (formatted)"
+
+    values.push from: eth.coinbase
+
+    output = instance.set.sendTransaction.apply(null, values)
+    c.log "  //=> raw: #{output}"
+
     res.json
       success: true
     # or

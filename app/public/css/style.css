@@ -4,6 +4,9 @@ ul {
   list-style-type: none;
 }
 
+input {
+  display: block;
+}
 
 /* main */
 
