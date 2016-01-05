@@ -2,6 +2,7 @@
 #
 # install it: gem i net-ssh highline
 #
+require_relative "env"
 
 
 puts "connecting to #{USER}@#{HOST}"
@@ -83,6 +84,15 @@ def main
   exe "cd ~/tmp/#{name} && ./configure && make -j 8 && make install"
   exe "ruby -v"
   exe "gem i bundler git-up"
+
+  # install docker
+  exe "apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D"
+  exe "echo \"deb https://apt.dockerproject.org/repo ubuntu-vivid main\" > /etc/apt/sources.list.d/docker.list"
+  exe update
+  exe install "linux-image-extra-$(uname -r)"
+  exe install "docker-engine"
+  exe "service docker start"
+  exe "docker run hello-world"
 
   # TODO: copy authorized_keys to www user
   # TODO: install nginx & passenger
