@@ -14,6 +14,8 @@ mount = (app) ->
   app.use bodyParser.json()
   app.use bodyParser.urlencoded( extended: true )
 
+  app.use addCors
+
   app.locals._s = _s
 
   app
@@ -28,6 +30,12 @@ addLocals = (req, res, next) ->
 addLocal = (app, key, value) ->
   app.locals[key] = value
   app
+
+addCors = (req, res, next) ->
+  res.header 'Access-Control-Allow-Origin',  '*'
+  res.header 'Access-Control-Allow-Headers', 'GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS'
+  res.header 'Access-Control-Allow-Headers', 'Content-Type'
+  next()
 
 module.exports =
   mount:      mount
