@@ -3,7 +3,7 @@ express   = require 'express'
 _         = require 'underscore'
 appLib    = require './app_lib'
 env       = require './lib/env'
-contracts = require './lib/contracts'
+contractsLib = require './lib/contracts'
 eth       = env.eth
 web3      = env.web3
 fAsc      = web3.fromAscii
@@ -56,37 +56,16 @@ defineGetter = (api, contract, method) ->
   url = "/#{contract.name}/#{method.name}"
   # c.log "defining route: GET  #{url}"
   api.get url, (req, res) ->
-    # TODO; do this in contracts.coffee!
-    Contract = eth.contract contract.abi
-    instance = Contract.at contract.address
-    value = instance[method.name]()
-    type  = method.outputs[0].type
+    params = req.query
 
-    c.log "#{contract.name}.#{method.name}()"
-    c.log "  //=> raw: #{value}"
-
-    value = convertValue value, type, "getter"
-
-    c.log "  //=> '#{value}' (type: #{type})\n"
-
-    res.json
-      value: value
-    # or
-    # returnError res
-
-defineSetter = (api, contract, method) ->
-  url = "/#{contract.name}/#{method.name}"
-  # c.log "defining route: POST #{url}"
-
-  api.post url, (req, res) ->
     # TODO; do this in contracts.coffee!
     Contract = eth.contract contract.abi
     instance = Contract.at contract.address
 
-    values = req.body.values
-    types  = req.body.types
+    values = params.values || []
+    types  = params.types
 
-    c.log "#{contract.name}.#{method.name}(#{values.join(", ")})"
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (getter)"
 
     values = _(values).map (value, idx) ->
       {
@@ -97,7 +76,45 @@ defineSetter = (api, contract, method) ->
     values = _(values).map (value) ->
       convertValue value.value, value.type, "setter"
 
-    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (formatted)"
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (getter) - formatted"
+
+    output = instance[method.name].apply(null, values)
+    c.log "  //=> raw: #{output}\n"
+
+    type   = method.outputs[0].type
+    output = convertValue output, type, "getter"
+
+    res.json
+      value: output
+    # or
+    # returnError res
+
+defineSetter = (api, contract, method) ->
+  url = "/#{contract.name}/#{method.name}"
+  # c.log "defining route: POST #{url}"
+
+  api.post url, (req, res) ->
+    params = req.body
+
+    # TODO; do this in contracts.coffee!
+    Contract = eth.contract contract.abi
+    instance = Contract.at contract.address
+
+    values = params.values || []
+    types  = params.types
+
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (setter)"
+
+    values = _(values).map (value, idx) ->
+      {
+        type:  types[idx]
+        value: value
+      }
+
+    values = _(values).map (value) ->
+      convertValue value.value, value.type, "setter"
+
+    c.log "#{contract.name}.#{method.name}(#{values.join(", ")}) (setter) - formatted"
 
     values.push from: eth.coinbase
 
@@ -119,7 +136,7 @@ logContracts = (contracts) ->
 # ---
 
 
-contracts = contracts.readContracts()
+contracts = contractsLib.readContracts()
 
 logContracts contracts
 
@@ -153,6 +170,7 @@ app.use '/api', api
 
 # admin code - deploy contract / restart / etc
 
+# TODO: do this in contractsLib and reuse code
 saveContractAddress = (contract_name, instance_address) ->
   config_path = "./config"
   contracts_json_path   = "#{config_path}/contracts.json"
@@ -166,7 +184,7 @@ displayErr = (label, err) ->
   console.error "Got error when '#{label}':"
   console.error "#{err}\n"
 
-renderDeployError = (err) ->
+renderDeployError = (res, err) ->
   displayErr "deploying contract", err
   if err.message == "Account does not exist or account balance too low"
     c.log "Balance: #{eth.getBalance(eth.coinbase)} wei - coinbase address: '#{eth.coinbase}'"
@@ -192,7 +210,7 @@ deployContract = (contract, res) ->
     c.log "ADDRESS: #{instance.address}" if instance
 
     if err
-      renderDeployError err
+      renderDeployError res, err
     else
       if instance.address
         console.log "  address: #{instance.address}\n"
@@ -214,14 +232,23 @@ deployContract = (contract, res) ->
           address: contract.address
 
 
-app.post "/deploy_contract", (req, res) ->
-  contract_name = req.body.contract.name
-
+deployContractRequest = (contract_name, res) ->
   contract = _(contracts).find (contract) ->
     contract.name == contract_name
 
   deployContract contract, res
 
+deleteContractAddress = (contract_name) ->
+  contractsLib.deleteAddressFromConf contract_name
+
+app.post "/contracts/deploy", (req, res) ->
+  contract_name = req.body.contract.name
+  deployContractRequest contract_name, res
+
+app.post "/contracts/redeploy", (req, res) ->
+  contract_name = req.body.contract.name
+  deleteContractAddress contract_name
+  deployContractRequest contract_name, res
 
 
 

@@ -9,8 +9,15 @@ c          = console
 env        = require "./env"
 eth        = env.eth
 
+
+# configs (paths)
+#
 contracts_dir_path = "./contracts"
 config_path        = "./config"
+
+# "constants"
+contracts_conf_path = "#{config_path}/contracts.json"
+
 
 log = (name, contents) ->
   c.log "\n#{name}:"
@@ -57,12 +64,20 @@ parseContract = (contract) ->
     getters:    getters
     setters:    setters
 
+readConfigs = ->
+  contracts_config = fs.readFileSync contracts_conf_path
+  JSON.parse contracts_config
+
+deleteAddressFromConf = (contract_name) ->
+  conf = readConfigs()
+  delete conf[contract_name]
+  conf = JSON.stringify conf, null, 2
+  fs.writeFileSync contracts_conf_path, conf
 
 readContracts = ->
   contracts = []
   contract_files   = glob.sync "#{contracts_dir_path}/*.sol"
-  contracts_config = fs.readFileSync "#{config_path}/contracts.json"
-  config = JSON.parse contracts_config
+  config = readConfigs()
 
   log "contracts.json", config
 
@@ -84,6 +99,6 @@ readContracts = ->
   contracts
 
 
-
 module.exports =
-  readContracts: readContracts
+  readContracts:         readContracts
+  deleteAddressFromConf: deleteAddressFromConf

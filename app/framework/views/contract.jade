@@ -15,7 +15,7 @@ block content
   if !contract.deployed
     p The contract has not been deployed yet
     
-    form(action="/deploy_contract" method="post")
+    form(action="/contracts/deploy" method="post")
       input(name="contract[name]", value=contract.name, type="hidden")
       input(value="Deploy", type="submit")
     
@@ -29,9 +29,20 @@ block content
       ul
         each method in contract.getters
           li
-            h4
-              a(href="/api/#{contract.name}/#{method.name}")
-                | #{method.name}( )
+            if method.inputs.length == 0
+              h4
+                a(href="/api/#{contract.name}/#{method.name}")
+                  | #{method.name}( )
+            else
+              h4
+                | #{method.name}(#{method.inputs.length})
+              form(action="/api/#{contract.name}/#{method.name}", method="get")
+                each input in method.inputs
+                  - label = `${input.name} (${input.type})`
+                  input(name="values[]" placeholder=label type="text")
+                  input(name="types[]" value=input.type type="hidden")
+                  
+                input(value="call" type="submit")
       
       hr
       
@@ -52,4 +63,9 @@ block content
       p 
         | Your coinbase is: 
         strong= eth.coinbase
+        
+    
+    form(action="/contracts/redeploy" method="post")
+      input(name="contract[name]", value=contract.name, type="hidden")
+      input(value="Redeploy", type="submit")
       

@@ -1,18 +1,32 @@
 contract ContactForm {
-  uint    number;
-  bytes32 str;
 
-  function save_contact(uint number_val, bytes32 str_val) {
-    number = number_val;
-    str    = str_val;
+  struct Contact {
+    bytes32 first;
+    bytes32 last;
   }
 
-  function read_number() constant returns (uint number_val){
-    return number;
+  mapping(bytes32 => Contact) contacts;
+
+  function addContact(bytes32 email, bytes32 first, bytes32 last) {
+    Contact contact = contacts[email];
+    if (contact.first != "") {
+      return;
+    }
+
+    contact.first = first;
+    contact.last = last;
   }
 
-  function read_str() constant returns (bytes32 str_val){
-    return str;
+  function getFirst(bytes32 email) constant returns (bytes32) {
+    return contacts[email].first;
+  }
+
+  function getLast(bytes32 email) constant returns (bytes32) {
+    return contacts[email].last;
+  }
+
+  function remove() {
+    suicide(msg.sender);
   }
 
 }
